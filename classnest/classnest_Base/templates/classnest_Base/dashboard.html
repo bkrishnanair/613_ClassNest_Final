@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClassNest Dashboard</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
+        ClassNest
+      </div>
+      
+      <nav class="nav-links">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'courses' %}">Courses</a>
+        {% if is_instructor %}
+          <a href="{% url 'create-course' %}" class="create-course-btn">
+            <i class="icon-plus"></i> Create Course
+          </a>
+        {% endif %}
+        
+        <a href="#">AI Quiz Generator</a>
+        <a href="#">Settings</a>
+        {% comment %} <a href="{% url 'password_change' %}">Change Password</a> {% endcomment %}
+        <span class="user-info">{{ request.user.username }}</span>
+        <!-- Logout Form -->
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+  <!-- Main Content -->
+  <script src="{% static 'classnest_Base/js/dashboard_script.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courses - ClassNest</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/courses.css' %}">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
+        ClassNest
+      </div>
+      
+      <nav class="nav-links">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'courses' %}">Courses</a>
+        {% if is_instructor %}
+          <a href="{% url 'create-course' %}" class="create-course-btn">
+            <i class="icon-plus"></i> Create Course
+          </a>
+        {% endif %}
+        
+        <a href="#">AI Quiz Generator</a>
+        <a href="#">Settings</a>
+        {% comment %} <a href="{% url 'password_change' %}">Change Password</a> {% endcomment %}
+        <span class="user-info">{{ request.user.username }}</span>
+        <!-- Logout Form -->
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="courses-container">
+    <h2>Courses</h2>
+    <div class="courses-grid">
+        {% for course in courses %}
+        <a href="{% url 'course-detail' course.id %}" class="course-card-link">
+            <div class="course-card">
+                <img src="{{ course.thumbnail.url }}" alt="Course Thumbnail" class="course-thumbnail">
+                <h3 class="course-title">{{ course.title }}</h3>
+                <p class="course-description">{{ course.description }}</p>
+                <p>Instructor: {{ course.instructor.username }}</p>
+                <p>Created At: {{ course.created_at|date:"M d, Y" }}</p>
+            </div>
+        </a>
+        {% empty %}
+            <p>No courses available.</p>
+        {% endfor %}
+    </div>
+  </div>
+
+
+  <script src="{% static 'classnest_Base/js/dashboard_script.js' %}"></script>
+</body>
+</html>

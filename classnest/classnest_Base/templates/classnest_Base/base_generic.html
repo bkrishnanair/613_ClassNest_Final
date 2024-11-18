@@ -1,0 +1,39 @@
+{% load custom_tags %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ClassNest{% endblock %}</title>
+  
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/login.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/register.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/password_change.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/password_change_done.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+          <div class="logo">
+            <!-- Add the image icon beside the "ClassNest" text -->
+            <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
+            ClassNest
+          </div>
+          <nav class="nav-links">
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+          </nav>
+        </div>
+      </header>
+      
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{% static 'classnest_Base/js/dashboard_script.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends "classnest_Base/base_generic.html" %}
+
+{% block title %}Login - ClassNest{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-header">
+        <h1>ClassNest</h1>
+        <p>Your Nest for Seamless Learning</p>
+    </div>
+    <div class="login-card">
+        <div class="login-icon">
+            <i class="icon-login"></i> <!-- Replace with an icon if necessary -->
+        </div>
+        <h2>Welcome back</h2>
+        <p>Sign in to your account</p>
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn sign-in-btn">Sign in</button> <!-- Button inside the card -->
+        </form>
+    </div>
+</div>
+{% endblock %}

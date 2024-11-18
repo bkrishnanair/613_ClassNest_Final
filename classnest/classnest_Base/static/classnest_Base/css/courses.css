@@ -1,0 +1,61 @@
+/* Main Container */
+.courses-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Courses Grid */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Course Card */
+.course-card {
+    width: 250px; /* Fixed width for each course card */
+    height: 350px; /* Fixed height for each course card */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Course Thumbnail */
+.course-thumbnail {
+    width: 100%; /* Make sure the thumbnail fills the width of the card */
+    height: 150px; /* Fixed height for thumbnails */
+    object-fit: cover; /* Ensures the image covers the space while maintaining aspect ratio */
+    border-radius: 4px;
+}
+
+/* Course Title */
+.course-title {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Course Description */
+.course-description {
+    font-size: 14px;
+    color: #666;
+    flex-grow: 1; /* Allow the description to fill the available space */
+}
+
+/* Instructor and Date */
+.course-instructor,
+.course-date {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+}
+

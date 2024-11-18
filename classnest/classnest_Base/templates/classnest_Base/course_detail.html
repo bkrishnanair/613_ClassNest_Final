@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ course.title }} - ClassNest</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/course_detail.css' %}">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
+        ClassNest
+      </div>
+      <nav class="nav-links">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'courses' %}">Courses</a>
+        {% if is_instructor %}
+          <a href="{% url 'create-course' %}" class="create-course-btn">
+            <i class="icon-plus"></i> Create Course
+          </a>
+        {% endif %}
+        <a href="#">AI Quiz Generator</a>
+        <a href="#">Settings</a>
+        <span class="user-info">{{ request.user.username }}</span>
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="course-detail-container">
+    <div class="course-header">
+        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }} Thumbnail" class="course-thumbnail-large">
+        <div class="course-info">
+        <h1>{{ course.title }}</h1>
+        <p>{{ course.description }}</p>
+        <div class="instructor-info"><div>
+            <h4>{{ course.instructor.username }}</h4>
+            <p>Instructor</p>
+          </div>
+        </div>
+        <div class="course-actions">
+            {% if is_instructor %}
+                <a href="{% url 'delete-course' course.id %}" class="delete-course-btn">Delete Course</a>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Content Section -->
+    <div class="course-content">
+      <h2>Course Content</h2>
+      <div class="content-tabs">
+        <a href="#" class="tab-link active">Recordings</a>
+        <a href="#" class="tab-link">Assignments</a>
+        <a href="#" class="tab-link">Materials</a>
+      </div>
+      <div class="tab-content">
+        <button class="add-content-btn">Add Recording</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!-- classnest_Base/templates/classnest_Base/register.html -->
+{% extends "classnest_Base/base_generic.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Register</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                <small class="form-hint">{{ form.username.help_text }}</small>
+            </div>
+            <div class="form-group">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                <small class="form-hint">{{ form.password1.help_text }}</small>
+            </div>
+            <div class="form-group">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                <small class="form-hint">{{ form.password2.help_text }}</small>
+            </div>
+            <div class="form-group">
+                <label for="user_type" class="user-type-label">I am a:</label>
+                <select name="user_type" id="user_type" class="user-type-select">
+                    <option value="student">Student</option>
+                    <option value="instructor">Instructor</option>
+                </select>
+            </div>
+            <button type="submit" class="auth-submit-btn">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
