@@ -19,11 +19,11 @@ create_user_groups()
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        user_type = request.POST.get('user_type')
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Assign the user to the correct group
+            user_type = form.cleaned_data.get('user_type')
+            # Assign the user to the appropriate group
             if user_type == 'student':
                 group = Group.objects.get(name='Student')
             elif user_type == 'instructor':
@@ -33,10 +33,9 @@ def register(request):
             login(request, user)
             return redirect('dashboard')
     else:
-        form = UserCreationForm()
+        form = UserRegistrationForm()
     return render(request, 'classnest_Base/register.html', {'form': form})
-
-
+    
 @login_required
 def dashboard_view(request):
     # Debugging: Print user and their groups
