@@ -109,7 +109,7 @@ def delete_course_view(request, course_id):
     else:
         # If the user is not authorized, return a forbidden response
         return HttpResponseForbidden("You are not allowed to delete this course.")
-    
+
 @login_required
 def add_module_view(request, course_id):
     course = get_object_or_404(Course, id=course_id)
