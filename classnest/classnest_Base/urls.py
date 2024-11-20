@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
     
 urlpatterns = [
-    path('login/', auth_views.LoginView.as_view(template_name='classnest_Base/login.html'), name='login'),
+    path('', auth_views.LoginView.as_view(template_name='classnest_Base/login.html'), name='login'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('create-course/', views.create_course_view, name='create-course'),
     path('courses/', views.courses_view, name='courses'),
