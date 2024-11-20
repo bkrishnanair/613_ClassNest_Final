@@ -17,17 +17,22 @@
         <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
         ClassNest
       </div>
+      
       <nav class="nav-links">
         <a href="{% url 'dashboard' %}">Dashboard</a>
         <a href="{% url 'courses' %}">Courses</a>
+        <a href="{% url 'discussions' %}" id="discussionsLink"><i class="fas fa-comments"></i> Discussions</a>
         {% if is_instructor %}
           <a href="{% url 'create-course' %}" class="create-course-btn">
             <i class="icon-plus"></i> Create Course
           </a>
         {% endif %}
         <a href="#">AI Quiz Generator</a>
-        <a href="{% url 'password_change' %}">Settings</a>
+        <a href="{% url 'inbox' %}" id="inboxLink"><i class="fas fa-inbox"></i> Inbox</a>
+        <a href="#">Settings</a>
+        {% comment %} <a href="{% url 'password_change' %}">Change Password</a> {% endcomment %}
         <span class="user-info">{{ request.user.username }}</span>
+        <!-- Logout Form -->
         <form action="{% url 'logout' %}" method="post" style="display: inline;">
           {% csrf_token %}
           <button type="submit" class="logout-btn">Logout</button>

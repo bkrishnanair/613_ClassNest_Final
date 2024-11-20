@@ -7,6 +7,8 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
   <link rel="stylesheet" href="{% static 'classnest_Base/css/create_course.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+ß
 
 </head>
 <body>
@@ -43,39 +45,36 @@
 
   <main class="create-course-container">
     <div class="create-course-card">
-      <h2><i class="icon-course"></i> Create New Course</h2>
+      <h2><i class="icon-course"></i> Inbox</h2>
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-          <label for="course-title">Course Title</label>
-          <input type="text" id="course-title" name="title" required> <!-- Make sure 'name' is 'title' -->
+          <label for="to">To</label>
+          <select id="to" name="to" required>
+            <option value="" disabled selected>Select recipent</option>
+            <option value="instructor">Sarah Johnson(is_instructor)</option>
+            <option value="student1">Mike Chen(student)</option>
+            <option value="student2">Emma Davis(student)</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="description">Description</label>
-          <textarea id="description" name="description" rows="4" required></textarea>
+          <label for="subject">Subject</label>
+          <textarea id="subject" name="subject" rows="2" required></textarea>
         </div>
         <div class="form-group">
-          <label for="thumbnail">Course Thumbnail</label>
-          <div class="upload-area">
-            <input type="file" id="thumbnail" name="thumbnail" accept=".png, .jpg, .jpeg, .gif" required>
-            <p>Upload a file or drag and drop</p>
-            <small>PNG, JPG, GIF up to 10MB</small>
-          </div>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
         </div>
         <div class="form-buttons">
-          <button type="button" class="cancel-btn" onclick="redirectToCourses()">Cancel</button>
-          <button type="submit" class="create-course-btn">Create Course</button>
+          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="submit" class="create-course-btn">Send</button>
         </div>
+      </div>
       </form>
       
     </div>
   </main>
 
-  <script>
-    // JavaScript function to redirect to the courses page
-    function redirectToCourses() {
-      window.location.href = "{% url 'courses' %}";
-    }
-  </script>
+  <script src="{% static 'classnest_Base/js/dashboard_script.js' %}"></script>
 </body>
 </html>

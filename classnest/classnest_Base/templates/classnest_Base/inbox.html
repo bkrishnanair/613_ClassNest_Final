@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courses - ClassNest</title>
+  <title>ClassNest Dashboard</title>
   {% load static %}
-  <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
-  <link rel="stylesheet" href="{% static 'classnest_Base/css/courses.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/discussion.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
   <!-- Navbar -->
@@ -39,28 +39,37 @@
       </nav>
     </div>
   </header>
-
-  <!-- Main Content -->
-  <div class="courses-container">
-    <h2>Courses</h2>
-    <div class="courses-grid">
-        {% for course in courses %}
-        <a href="{% url 'course-detail' course.id %}" class="course-card-link">
-            <div class="course-card">
-                <img src="{{ course.thumbnail.url }}" alt="Course Thumbnail" class="course-thumbnail">
-                <h3 class="course-title">{{ course.title }}</h3>
-                <p class="course-description">{{ course.description }}</p>
-                <p>Instructor: {{ course.instructor.username }}</p>
-                <p>Created At: {{ course.created_at|date:"M d, Y" }}</p>
-            </div>
-        </a>
-        {% empty %}
-            <p>No courses available.</p>
-        {% endfor %}
+  <main class="container">
+    <div class="discussions-header">
+      <h2><i class="fas fa-inbox"></i> Inbox</h2>
+      <a href="{% url 'create-inbox' %}" class="compose-btn">Compose</a>
     </div>
-  </div>
-
-
+  
+    {% if inbox_messages %}
+        {% for message in inbox_messages %}
+          <div class="discussion-card">
+            <h3>{{ message.subject }}</h3>
+            <p>To: {{ message.to }}</p>
+            <p>Message : {{ message.message }}</p>
+            <p>{{ message.created_at|date:"M d, Y H:i" }}</p>
+            <div class="discussion-actions">
+              {% if message.id %}
+                <a href="{% url 'inbox-detail' inbox_id=message.id %}">View</a>
+                <form action="{% url 'delete-inbox' inbox_id=message.id %}" method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="delete-btn">Delete</button>
+                </form>
+              {% else %}
+                <p class="error">This message is invalid and cannot be viewed or deleted.</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-messages">No messages found in your inbox.</p>
+    {% endif %}
+  </main>
   <script src="{% static 'classnest_Base/js/dashboard_script.js' %}"></script>
 </body>
 </html>
