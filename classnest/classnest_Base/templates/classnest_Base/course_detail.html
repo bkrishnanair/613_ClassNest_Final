@@ -7,6 +7,7 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
   <link rel="stylesheet" href="{% static 'classnest_Base/css/course_detail.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/modal_styles.css' %}">
 </head>
 <body>
   <!-- Navbar -->
@@ -25,7 +26,7 @@
           </a>
         {% endif %}
         <a href="#">AI Quiz Generator</a>
-        <a href="#">Settings</a>
+        <a href="{% url 'password_change' %}">Settings</a>
         <span class="user-info">{{ request.user.username }}</span>
         <form action="{% url 'logout' %}" method="post" style="display: inline;">
           {% csrf_token %}
@@ -38,35 +39,75 @@
   <!-- Main Content -->
   <div class="course-detail-container">
     <div class="course-header">
-        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }} Thumbnail" class="course-thumbnail-large">
-        <div class="course-info">
-        <h1>{{ course.title }}</h1>
+      <img src="{{ course.thumbnail.url }}" alt="{{ course.title }} Thumbnail" class="course-thumbnail-large">
+      <div class="course-info">
+        <div class="course-title-container">
+          <h1>{{ course.title }}</h1>
+          <!-- Only show the Enroll button if the user is a student -->
+          {% if not is_instructor and request.user not in course.students.all %}
+            <div class="enroll-button-container">
+              <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="enroll" class="enroll-btn">Enroll</button>
+              </form>
+            </div>
+          {% elif not is_instructor and request.user in course.students.all %}
+            <span class="enrolled-badge">Enrolled</span>
+          {% endif %}
+        </div>
         <p>{{ course.description }}</p>
-        <div class="instructor-info"><div>
+        <div class="instructor-info">
+          <div>
             <h4>{{ course.instructor.username }}</h4>
             <p>Instructor</p>
           </div>
         </div>
         <div class="course-actions">
-            {% if is_instructor %}
-                <a href="{% url 'delete-course' course.id %}" class="delete-course-btn">Delete Course</a>
-            {% endif %}
+          {% if is_instructor %}
+            <button class="delete-course-btn" onclick="showDeleteConfirmation()">Delete Course</button>
+          {% endif %}
         </div>
       </div>
     </div>
 
-    <!-- Course Content Section -->
-    <div class="course-content">
+    <!-- Modules Section -->
+    <div class="modules-section">
+      {% if request.user == course.instructor %}
+        <a href="{% url 'add-module' course.id %}" class="add-module-btn" style="margin-bottom: 20px;">+ Add Module</a>
+      {% endif %}
       <h2>Course Content</h2>
-      <div class="content-tabs">
-        <a href="#" class="tab-link active">Recordings</a>
-        <a href="#" class="tab-link">Assignments</a>
-        <a href="#" class="tab-link">Materials</a>
-      </div>
-      <div class="tab-content">
-        <button class="add-content-btn">Add Recording</button>
+      {% if modules %}
+        <div class="modules-list">
+          {% for module in modules %}
+            <div class="module">
+              <a href="{% url 'module-detail' module.id %}">
+                <h3>{{ module.title }}</h3>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No modules created yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">Are you sure?</div>
+      <p>Do you really want to delete this item? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button class="confirm-delete-btn" onclick="confirmDelete()">Delete</button>
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
       </div>
     </div>
   </div>
+
+  <!-- JavaScript -->
+  <script>
+    var deleteCourseUrl = "{% url 'delete-course' course.id %}";
+  </script>
+  <script src="{% static 'classnest_Base/js/course_detail.js' %}"></script>
 </body>
 </html>

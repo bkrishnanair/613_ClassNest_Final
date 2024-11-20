@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ module.title }} - ClassNest</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/dashboard_styles.css' %}">
+  <link rel="stylesheet" href="{% static 'classnest_Base/css/module_detail.css' %}">
+  <style>
+    
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
+        ClassNest
+      </div>
+      <nav class="nav-links">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'courses' %}">Courses</a>
+        <span class="user-info">{{ request.user.username }}</span>
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Module Details -->
+  <div class="module-detail-container">
+    <h1>{{ module.title }}</h1>
+
+    {% if request.user == module.course.instructor %}
+      <!-- Updated Add Content Section -->
+      <div class="add-content-section">
+        {% if request.user == module.course.instructor %}
+          <!-- Delete Module Button -->
+          <!-- Delete Module Form -->
+          <div class="delete-module-container">
+            <form action="{% url 'delete-module' module.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="delete-module-btn">Delete Module</button>
+            </form>
+          </div>
+          {% endif %}
+        
+        <h3>Add Content</h3>
+        
+        <form action="{% url 'add-recording' module.id %}" method="post">
+          {% csrf_token %}
+          <input type="text" name="recording_title" placeholder="Recording Title" required>
+          <input type="url" name="recording_url" placeholder="Recording URL" required>
+          <button type="submit" class="add-btn">+</button>
+        </form>
+
+        <form action="{% url 'add-assignment' module.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="text" name="assignment_title" placeholder="Assignment Title" required>
+          <input type="file" name="assignment_file" required>
+          <button type="submit" class="add-btn">+</button>
+        </form>
+
+        <form action="{% url 'add-material' module.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="text" name="material_title" placeholder="Material Title" required>
+          <input type="file" name="material_file" required>
+          <button type="submit" class="add-btn">+</button>
+        </form>
+      </div>
+
+       <!-- Cancel Button to Redirect to Course Detail Page -->
+       <div class="cancel-button-container">
+        <a href="{% url 'course-detail' module.course.id %}" class="cancel-btn">Cancel</a>
+      </div>
+
+    {% endif %}
+
+    <div class="content-section">
+            <!-- Recordings Section -->
+      <h2>Recordings</h2>
+      {% if recordings %}
+        <ul>
+          {% for recording in recordings %}
+            <li>
+              <div class="item-title">{{ recording.title }}</div>
+              <div class="item-actions">
+                <a href="{{ recording.url }}" target="_blank">Link</a>
+                {% if request.user == module.course.instructor %}
+                <!-- Delete Recording Form -->
+                  <form action="{% url 'delete-recording' recording.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-recording-btn">Delete</button>
+                  </form>
+                {% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No recordings available.</p>
+      {% endif %}
+
+      <!-- Assignments Section -->
+      <h2>Assignments</h2>
+      {% if assignments %}
+        <ul>
+          {% for assignment in assignments %}
+            <li>
+              <div class="item-title">{{ assignment.title }}</div>
+              <div class="item-actions">
+                <a href="{{ assignment.file.url }}" download>Download</a>
+                {% if request.user == module.course.instructor %}
+                  <!-- Assignment Delete Button -->
+                  <!-- Delete Assignment Form -->
+                  <form action="{% url 'delete-assignment' assignment.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-assignment-btn">Delete</button>
+                  </form>
+                {% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No assignments available.</p>
+      {% endif %}
+
+      <!-- Materials Section -->
+      <h2>Materials</h2>
+      {% if materials %}
+        <ul>
+          {% for material in materials %}
+            <li>
+              <div class="item-title">{{ material.title }}</div>
+              <div class="item-actions">
+                <a href="{{ material.file.url }}" download>Download</a>
+                {% if request.user == module.course.instructor %}
+                  <!-- Form with Confirmation for Deletion -->
+                  <!-- Delete Material Form -->
+                <form action="{% url 'delete-material' material.id %}" method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="delete-material-btn">Delete</button>
+                </form>
+
+                {% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No materials available.</p>
+      {% endif %}
+
+    </div>
+  </div>
+  
+  
+  <!-- Custom Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">Are you sure?</div>
+      <p>Do you really want to delete this item? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button class="confirm-delete" id="confirmDeleteButton">Delete</button>
+        <button class="cancel" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  
+  
+  <script src="{% static 'classnest_Base/js/module_detail.js' %}"></script>
+  
+</body>
+</html>

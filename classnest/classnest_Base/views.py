@@ -60,7 +60,7 @@ def create_course_view(request):
             course = form.save(commit=False)
             course.instructor = request.user
             course.save()
-            return redirect('dashboard')  # Redirect to the dashboard or another page after creating the course
+            return redirect('courses')  # Redirect to the courses or another page after creating the course
         else:
             print("Form errors:", form.errors)
     else:
@@ -79,12 +79,23 @@ def courses_view(request):
 @login_required
 def course_detail_view(request, course_id):
     course = get_object_or_404(Course, id=course_id)
-    is_instructor = request.user == course.instructor
+    is_instructor = request.user.groups.filter(name='Instructor').exists()
+    modules = Module.objects.filter(course=course)
+
+    # Handle enrollment for students
+    if request.method == "POST" and 'enroll' in request.POST:
+        if not is_instructor:
+            course.students.add(request.user)
+            messages.success(request, "You have successfully enrolled in the course.")
+            return redirect('dashboard')
+
     return render(request, 'classnest_Base/course_detail.html', {
         'course': course,
-        'is_instructor': is_instructor
+        'is_instructor': is_instructor,
+        'modules': modules
     })
-    
+
+
 @login_required
 def delete_course_view(request, course_id):
     # Get the course object or return a 404 error if not found
@@ -98,3 +109,176 @@ def delete_course_view(request, course_id):
     else:
         # If the user is not authorized, return a forbidden response
         return HttpResponseForbidden("You are not allowed to delete this course.")
+    
+@login_required
+def add_module_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    
+    if request.user != course.instructor:
+        return HttpResponseForbidden("You are not allowed to add modules to this course.")
+    
+    return render(request, 'classnest_Base/add_module.html', {'course': course})
+
+@login_required
+def save_module_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if request.user != course.instructor:
+        return HttpResponseForbidden("You are not allowed to add modules to this course.")
+
+    if request.method == "POST":
+        # Save the module
+        module_title = request.POST.get('module_title')
+        module = Module.objects.create(title=module_title, course=course)
+
+        # Save recordings as URLs
+        recording_urls = request.POST.getlist('recordings')
+        recording_titles = request.POST.getlist('recording_title')  # Get the titles
+        for url, title in zip(recording_urls, recording_titles):
+            if url.strip():  # Check if the URL is not empty
+                Recording.objects.create(module=module, title=title, url=url)
+
+        # Save assignment files
+        assignments = request.FILES.getlist('assignments')
+        assignment_titles = request.POST.getlist('assignment_title')  # Get the titles
+        for file, title in zip(assignments, assignment_titles):
+            Assignment.objects.create(module=module, title=title, file=file)
+
+        # Save material files
+        materials = request.FILES.getlist('materials')
+        material_titles = request.POST.getlist('material_title')  # Get the titles
+        for file, title in zip(materials, material_titles):
+            Material.objects.create(module=module, title=title, file=file)
+
+        return redirect('course-detail', course_id=course.id)
+
+    return render(request, 'classnest_Base/add_module.html', {'course': course})
+
+@login_required
+def module_detail_view(request, module_id):
+    module = get_object_or_404(Module, id=module_id)
+    course = module.course  # Ensure you have the course related to the module
+
+    # Retrieve related content using the related manager
+    recordings = module.recording_set.all()
+    assignments = module.assignment_set.all()
+    materials = module.material_set.all()
+
+    # Pass the course object to the template
+    return render(request, 'classnest_Base/module_detail.html', {
+        'module': module,
+        'course': course,
+        'recordings': recordings,
+        'assignments': assignments,
+        'materials': materials,
+    })
+
+
+@login_required
+# View to add a recording
+def add_recording_view(request, module_id):
+    module = get_object_or_404(Module, id=module_id)
+    if request.user != module.course.instructor:
+        return HttpResponseForbidden("You are not allowed to add recordings to this module.")
+
+    if request.method == "POST":
+        title = request.POST.get('recording_title')
+        url = request.POST.get('recording_url')
+        if title and url:
+            Recording.objects.create(module=module, title=title, url=url)
+        return redirect('module-detail', module.id)
+
+@login_required
+# View to add an assignment
+def add_assignment_view(request, module_id):
+    module = get_object_or_404(Module, id=module_id)
+    if request.user != module.course.instructor:
+        return HttpResponseForbidden("You are not allowed to add assignments to this module.")
+
+    if request.method == "POST" and request.FILES.get('assignment_file'):
+        title = request.POST.get('assignment_title')
+        file = request.FILES.get('assignment_file')
+        if title and file:
+            Assignment.objects.create(module=module, title=title, file=file)
+        return redirect('module-detail', module.id)
+
+@login_required
+# View to add a material
+def add_material_view(request, module_id):
+    module = get_object_or_404(Module, id=module_id)
+    if request.user != module.course.instructor:
+        return HttpResponseForbidden("You are not allowed to add materials to this module.")
+
+    if request.method == "POST" and request.FILES.get('material_file'):
+        title = request.POST.get('material_title')
+        file = request.FILES.get('material_file')
+        if title and file:
+            Material.objects.create(module=module, title=title, file=file)
+        return redirect('module-detail', module.id)
+ 
+@login_required   
+# View to delete a recording
+def delete_recording_view(request, recording_id):
+    recording = get_object_or_404(Recording, id=recording_id)
+    if request.user != recording.module.course.instructor:
+        return HttpResponseForbidden("You are not allowed to delete this recording.")
+
+    if request.method == "POST":
+        recording.delete()
+        return redirect('module-detail', recording.module.id)
+
+@login_required
+# View to delete an assignment
+def delete_assignment_view(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if request.user != assignment.module.course.instructor:
+        return HttpResponseForbidden("You are not allowed to delete this assignment.")
+
+    if request.method == "POST":
+        assignment.delete()
+        return redirect('module-detail', assignment.module.id)
+
+@login_required
+# View to delete a material
+def delete_material_view(request, material_id):
+    material = get_object_or_404(Material, id=material_id)
+    if request.user != material.module.course.instructor:
+        return HttpResponseForbidden("You are not allowed to delete this material.")
+
+    if request.method == "POST":
+        material.delete()
+        return redirect('module-detail', material.module.id)
+
+@login_required
+def delete_module_view(request, module_id):
+    module = get_object_or_404(Module, id=module_id)
+
+    # Check if the user is the instructor of the module
+    if request.user == module.course.instructor:
+        module.delete()  # Delete the module and its related content
+        return redirect('course-detail', course_id=module.course.id)  # Redirect to the course detail page
+    else:
+        return HttpResponseForbidden("You are not allowed to delete this module.")
+    
+@login_required
+def dashboard_view(request):
+    is_instructor = request.user.groups.filter(name='Instructor').exists()
+    if is_instructor:
+        # Fetch courses created by the instructor
+        instructed_courses = Course.objects.filter(instructor=request.user)
+        return render(request, 'classnest_Base/dashboard.html', {
+            'is_instructor': is_instructor,
+            'instructed_courses': instructed_courses
+        })
+    else:
+        # Fetch courses the student is enrolled in
+        enrolled_courses = request.user.enrolled_courses.all()
+        return render(request, 'classnest_Base/dashboard.html', {
+            'is_instructor': is_instructor,
+            'enrolled_courses': enrolled_courses
+        })
+
+@login_required
+def profile_view(request):
+    return render(request, 'classnest_Base/profile.html')
+

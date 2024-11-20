@@ -6,11 +6,30 @@ from django.conf import settings
 from django.conf.urls.static import static
     
 urlpatterns = [
+    path('login/', auth_views.LoginView.as_view(template_name='classnest_Base/login.html'), name='login'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('create-course/', views.create_course_view, name='create-course'),
     path('courses/', views.courses_view, name='courses'),
+    
     path('course/<int:course_id>/', views.course_detail_view, name='course-detail'),
+    
     path('course/delete/<int:course_id>/', views.delete_course_view, name='delete-course'),
+    path('course/<int:course_id>/add-module/', views.add_module_view, name='add-module'),
+    path('course/<int:course_id>/save-module/', views.save_module_view, name='save-module'),
+    
+    path('module/<int:module_id>/', views.module_detail_view, name='module-detail'),
+    path('module/<int:module_id>/add-recording/', views.add_recording_view, name='add-recording'),
+    path('module/<int:module_id>/add-assignment/', views.add_assignment_view, name='add-assignment'),
+    path('module/<int:module_id>/add-material/', views.add_material_view, name='add-material'),
+    
+    path('recording/<int:recording_id>/delete/', views.delete_recording_view, name='delete-recording'),
+    path('assignment/<int:assignment_id>/delete/', views.delete_assignment_view, name='delete-assignment'),
+    path('material/<int:material_id>/delete/', views.delete_material_view, name='delete-material'),
+    
+    path('module/<int:module_id>/delete/', views.delete_module_view, name='delete-module'),
+    
+    path('profile/', views.profile_view, name='profile'),
+    
     path('login/', auth_views.LoginView.as_view(template_name='classnest_Base/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register'),

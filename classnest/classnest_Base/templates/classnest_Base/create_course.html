@@ -27,7 +27,7 @@
         {% endif %}
         
         <a href="#">AI Quiz Generator</a>
-        <a href="#">Settings</a>
+        <a href="{% url 'password_change' %}">Settings</a>
         {% comment %} <a href="{% url 'password_change' %}">Change Password</a> {% endcomment %}
         <span class="user-info">{{ request.user.username }}</span>
         <!-- Logout Form -->
@@ -61,7 +61,7 @@
           </div>
         </div>
         <div class="form-buttons">
-          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="button" class="cancel-btn" onclick="redirectToCourses()">Cancel</button>
           <button type="submit" class="create-course-btn">Create Course</button>
         </div>
       </form>
@@ -69,6 +69,11 @@
     </div>
   </main>
 
-  <script src="{% static 'classnest_Base/js/dashboard_script.js' %}"></script>
+  <script>
+    // JavaScript function to redirect to the courses page
+    function redirectToCourses() {
+      window.location.href = "{% url 'courses' %}";
+    }
+  </script>
 </body>
 </html>

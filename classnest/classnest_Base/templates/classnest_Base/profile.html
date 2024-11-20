@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - ClassNest</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'classnest_Base/css/profile.css' %}">
+</head>
+<body>
+   
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <img src="{% static 'classnest_Base/img/app_icon.png' %}" alt="Logo Icon" class="logo-icon">
+        ClassNest
+      </div>
+      <nav class="nav-links">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'courses' %}">Courses</a>
+        {% if is_instructor %}
+          <a href="{% url 'create-course' %}" class="create-course-btn">
+            <i class="icon-plus"></i> Create Course
+          </a>
+        {% endif %}
+        <a href="#">AI Quiz Generator</a>
+        <a href="{% url 'profile' %}">Settings</a>
+        <span class="user-info">{{ request.user.username }}</span>
+        <!-- Logout Form -->
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Profile Content -->
+  <div class="profile-container card">
+    {% comment %} <!-- Theme Toggle -->
+    <div class="theme-toggle">
+      <h2>Settings</h2>
+      <button id="theme-toggle-btn" onclick="toggleTheme()">
+        🌙 Dark Mode
+      </button>
+    </div> {% endcomment %}
+
+    <!-- Form for Profile Information -->
+    <form method="POST" action="{% url 'profile' %}">
+      {% csrf_token %}
+      
+      <!-- Profile Information Section -->
+      <div class="profile-section">
+        <h3><i class="fas fa-user"></i> Profile Information</h3>
+        {{ u_form.username }}
+      </div>
+
+      <!-- Contact Information Section -->
+      <div class="profile-section">
+        <h3>📞 Contact Information</h3>
+        <label for="contact">Contact Number</label>
+        {{ p_form.contact }}
+    </div>
+
+      <!-- Social Links Section -->
+      <div class="profile-section">
+        <h3>🔗 Social Links</h3>
+        <label for="github">GitHub</label>
+        {{ p_form.github }}
+    
+        <label for="linkedin">LinkedIn</label>
+        {{ p_form.linkedin }}
+    </div>
+
+      <!-- Password Change Section -->
+
+      <div class="profile-section">
+        <h3>🔒 Change Password</h3>
+        <label for="old_password">Old Password</label>
+        <input type="password" id="old_password" name="old_password" value="{{ password_form.old_password }}">
+        <label for="new_password1">New Password</label>
+        <input type="password" id="new_password1" name="new_password1" value="{{ password_form.new_password1 }}">
+        <label for="new_password2">Confirm New Password</label>
+        <input type="password" id="new_password2" name="new_password2" value="{{ password_form.new_password2 }}">
+    </div>
+
+      {% comment %} <div class="profile-section">
+        <h3>🔒 Change Password</h3>
+        {{ password_form.old_password }}
+        {{ password_form.new_password1 }}
+        {{ password_form.new_password2 }}
+      </div> {% endcomment %}
+      <!-- Save Changes Button -->
+      <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Changes</button>
+
+    </form> <!-- End of form -->
+
+  </div> <!-- End of profile-container -->
+
+  <!-- Optional: Include any additional scripts -->
+  <script src="{% static 'classnest_Base/js/profile.js' %}"></script>
+</body>
+</html>
